@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"YibaiPusher/config"
-	"YibaiPusher/models"
-	"YibaiPusher/statics"
+	"github.com/hundredlee/wechat_pusher/config"
+	"github.com/hundredlee/wechat_pusher/models"
+	"github.com/hundredlee/wechat_pusher/statics"
 	"encoding/json"
 	"errors"
 	"fmt"
