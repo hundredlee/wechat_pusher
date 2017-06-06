@@ -1,0 +1,10 @@
+package main
+
+import (
+	"YibaiPusher/utils"
+)
+
+func main() {
+	utils.NewPush(tasks).Run()
+}
+
