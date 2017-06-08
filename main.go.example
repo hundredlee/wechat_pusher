@@ -1,10 +1,26 @@
 package main
 
 import (
-	"YibaiPusher/utils"
+	"github.com/hundredlee/wechat_pusher/models"
+    "github.com/hundredlee/wechat_pusher/utils"
 )
 
 func main() {
+
+    tasks = make([]models.Task, 100)
+    mess := models.Message{
+        		ToUser: "oBv9cuLU5zyI27CtzI4VhV6Xabms",
+        		TemplateId: "UXb6s5dahNC5Zt-xQIxbLJG1BdP8mP73LGLhNXl68J8",
+        		Url: "http://baidu.com",
+        		Data: models.Data{
+        			First: models.Raw{"xxx", "#173177"},
+        			Subject: models.Raw{"xxx", "#173177"},
+        			Sender: models.Raw{"xxx", "#173177"},
+        			Remark: models.Raw{"xxx", "#173177"}}}
+    task := models.Task{Message: mess}
+
+    tasks[0] = task
+
 	utils.NewPush(tasks).Run()
 }
 
