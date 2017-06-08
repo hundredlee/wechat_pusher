@@ -1,4 +1,4 @@
-package: YibaiPusher
+package: WechatPuhser
 import:
 - package: github.com/robfig/cron
   repo: git@github.com:robfig/cron.git

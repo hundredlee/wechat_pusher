@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var accessToken = AccessTokenInstance(true)
+var accessToken = AccessTokenInstance(false)
 
 type Push struct {
 	bufferNum int
@@ -35,52 +35,59 @@ func (self *Push) SetBufferNum(bufferNum int) *Push {
 	return self
 }
 
-func (self *Push) Run() {
+func (self *Push) Add(schedule string) {
 
-	if self.retries == 0 || self.bufferNum == 0 {
-		panic("Please SetRetries or SetBufferNum")
-	}
+	getCronInstance().AddFunc(schedule, func() {
+		if self.retries == 0 || self.bufferNum == 0 {
+			panic("Please SetRetries or SetBufferNum")
+		}
 
-	var resourceChannel = make(chan bool, self.bufferNum)
+		var resourceChannel = make(chan bool, self.bufferNum)
 
-	for _, task := range self.tasks {
+		for _, task := range self.tasks {
 
-		resourceChannel <- true
+			resourceChannel <- true
 
-		go func(task models.Task) {
+			go func(task models.Task) {
 
-			retr := 0
+				retr := 0
 
-			defer func() {
-				if recover() != nil {
-					log.Printf("error-log ++++ TaskInfo : %v ++++\n", task)
+				defer func() {
+					if recover() != nil {
+						log.Printf("error-log ++++ TaskInfo : %v ++++\n", task)
+					}
+				}()
+
+				r, _ := json.Marshal(task.Message)
+				url := fmt.Sprintf(statics.WECHAT_TEMPLATE_SEND, accessToken.GetToken())
+
+			LABEL:
+				resp, _ := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(r))
+
+				body, _ := ioutil.ReadAll(resp.Body)
+				errCode, _ := jsonparser.GetInt(body, "errcode")
+
+				if errCode != 0 {
+					if retr >= self.retries {
+						log.Printf("error-log ++++ TaskInfo : %v -- ErrorCode : %d ++++\n", task, errCode)
+					} else {
+
+						if errCode == 40001 {
+							accessToken.Refresh()
+						}
+
+						log.Printf("retry times : %d", retr)
+						time.Sleep(3 * time.Second)
+						retr++
+						goto LABEL
+					}
 				}
-			}()
 
-			r, _ := json.Marshal(task.Message)
-			url := fmt.Sprintf(statics.WECHAT_TEMPLATE_SEND, accessToken.GetToken())
+				<-resourceChannel
 
-		LABEL:
-			resp, _ := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(r))
+			}(task)
 
-			body, _ := ioutil.ReadAll(resp.Body)
-			errCode, _ := jsonparser.GetInt(body, "errcode")
-
-			if errCode != 0 {
-				if retr >= self.retries {
-					log.Printf("error-log ++++ TaskInfo : %v -- ErrorCode : %d ++++\n", task, errCode)
-				} else {
-					log.Printf("retry times : %d", retr)
-					time.Sleep(3 * time.Second)
-					retr++
-					goto LABEL
-				}
-			}
-
-			<-resourceChannel
-
-		}(task)
-
-	}
+		}
+	})
 
 }
