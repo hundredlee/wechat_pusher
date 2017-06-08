@@ -109,8 +109,8 @@ func main() {
 
 - `utils.NewPush(tasks).SetRetries(4).SetBufferNum(10).Add("10 * * * * *")`
 - Add方法里面填写的是执行的时间，(10 * * * * *) 表示每分钟的第十秒钟执行一次。
-- 具体请参照https://github.com/robfig/cron/blob/master/doc.go
-- 本推送服务的计划任务是由https://github.com/robfig/cron实现的。
+- 具体请参照 https://github.com/robfig/cron/blob/master/doc.go
+- 本推送服务的计划任务是由 https://github.com/robfig/cron 实现的。
 
 ### Run
 - 很简单，当你组装好所有的task以后，直接运行一句话就可以了。
