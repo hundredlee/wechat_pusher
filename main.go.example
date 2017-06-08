@@ -1,0 +1,31 @@
+package main
+
+import (
+	"fmt"
+	"github.com/hundredlee/wechat_pusher/models"
+	"github.com/hundredlee/wechat_pusher/utils"
+	"runtime"
+)
+
+func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	var tasks []models.Task
+	tasks = make([]models.Task, 100)
+	mess := models.Message{
+		ToUser: "oBv9cuLU5zyI27CtzI4VhV6Xabms",
+		TemplateId: "UXb6s5dahNC5Zt-xQIxbLJG1BdP8mP73LGLhNXl68J8",
+		Url: "http://baidu.com",
+		Data: models.Data{
+			First: models.Raw{"xxx", "#173177"},
+			Subject: models.Raw{"xxx", "#173177"},
+			Sender: models.Raw{"xxx", "#173177"},
+			Remark: models.Raw{"xxx", "#173177"}}}
+	task := models.Task{Message: mess}
+	for i := 0; i < 100; i++ {
+		task.Message.Data.First.Value = fmt.Sprintf("%d", i)
+		tasks[i] = task
+	}
+
+	utils.NewPush(tasks).SetRetries(4).SetBufferNum(10).Run()
+}
