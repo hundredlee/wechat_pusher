@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"github.com/hundredlee/wechat_pusher/config"
-	"github.com/hundredlee/wechat_pusher/models"
-	"github.com/hundredlee/wechat_pusher/statics"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/buger/jsonparser"
+	"github.com/hundredlee/wechat_pusher/config"
+	"github.com/hundredlee/wechat_pusher/models"
+	"github.com/hundredlee/wechat_pusher/statics"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -73,17 +73,10 @@ func requestAccessToken() *AccessToken {
 		statics.WECHAT_GET_ACCESS_TOKEN,
 		conf.ConMap["WeChat.APPID"], conf.ConMap["WeChat.SECRET"])
 
-	response, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
+	response, _ := http.Get(url)
 
 	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
-
-	if err != nil {
-		panic(err)
-	}
+	body, _ := ioutil.ReadAll(response.Body)
 
 	if errCode, err := jsonparser.GetInt(body, "errcode"); err == nil && errCode != 0 {
 		if errMsg, _, _, err := jsonparser.Get(body, "errmsg"); err == nil {
@@ -96,6 +89,12 @@ func requestAccessToken() *AccessToken {
 	if err := json.Unmarshal(body, &token); err != nil {
 		panic(err)
 	}
+
+	defer func() {
+		if recover() != nil {
+			panic("error")
+		}
+	}()
 
 	return &AccessToken{token: token, createTime: time.Now(), lifeCycle: token.ExpiresIn}
 }
