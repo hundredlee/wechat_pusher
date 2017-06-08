@@ -1,11 +1,5 @@
 # wechat_pusher
 
-## 开源
-> 项目已经在Github开源，还没有完全地完善，但是用是没问题的。
-> 求各位大神的star啊，这是我的第一个比较完整的Go程序。(*^__^*)
-
-- https://github.com/hundredlee/wechat_pusher
-
 ## 怎么用？
 ### 第一步当然是go get
 - `go get github.com/hundredlee/wechat_pusher.git`
@@ -21,7 +15,7 @@
 ├── config.conf.example
 ├── glide.lock
 ├── glide.yaml
-├── main.go.example
+├── main.go
 ├── models
 │   ├── message.go
 │   ├── task.go
@@ -55,7 +49,7 @@ TEMPLATE=
 - 我们看看models文件夹里面有message.go文件，里面其实就是模板的格式。
 - 具体怎么用，看看main.go.example文件里面的示例。
 
-```
+```Go
 package main
 
 import (
@@ -93,7 +87,3 @@ func main() {
 ### Run
 - 很简单，当你组装好所有的task以后，直接运行一句话就可以了。
 - `utils.NewPush(tasks).SetRetries(4).SetBufferNum(10).Run()`
-
-### 打算？
-- 目前还是比较简单的推送，然后日志相对来说比较完整。但是缺少了计划任务功能。大家可以star一下，等我更新计划任务的功能。
-
