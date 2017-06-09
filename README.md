@@ -82,8 +82,8 @@ func main() {
 	var tasks []models.Task
 	tasks = make([]models.Task, 100)
 	mess := models.Message{
-		ToUser:     "oBv9cuLU5zyI27CtzI4VhV6Xabms",
-		TemplateId: "UXb6s5dahNC5Zt-xQIxbLJG1BdP8mP73LGLhNXl68J8",
+		ToUser:     "openid",
+		TemplateId: "templateId",
 		Url:        "http://baidu.com",
 		Data: models.Data{
 			First:   models.Raw{"xxx", "#173177"},
