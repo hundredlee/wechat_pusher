@@ -1,8 +1,13 @@
-hash: a6de1816f6812e3b3500366398a1efc60f5da95bdda887b19563d9fe2d0adfea
-updated: 2017-06-05T11:03:31.685441837+08:00
+hash: 2ba71489eabf2f4e5fef1034083b88dfa6ea7663a5357119587844c83908d18b
+updated: 2017-06-10T14:42:27.279366421+08:00
 imports:
 - name: github.com/buger/jsonparser
   version: bb14bb6c38f6cf1706ef55278891d184b6a51b0e
+- name: github.com/garyburd/redigo
+  version: 95d11dba2d44531bdb8022752b98912baafae03a
+  subpackages:
+  - internal
+  - redis
 - name: github.com/jinzhu/gorm
   version: 9acaa33324bbcc78239a1c913d4f1292c12177b9
   repo: git@github.com:jinzhu/gorm.git
@@ -11,4 +16,6 @@ imports:
   version: 736158dc09e10f1911ca3a1e1b01f11b566ce5db
   repo: git@github.com:robfig/cron.git
   vcs: git
+- name: github.com/urfave/cli
+  version: d70f47eeca3afd795160003bc6e28b001d60c67c
 testImports: []

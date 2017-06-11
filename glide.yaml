@@ -7,3 +7,5 @@ import:
   repo: git@github.com:jinzhu/gorm.git
   vcs: git
 - package: github.com/buger/jsonparser
+- package: github.com/garyburd/redigo
+- package: github.com/urfave/cli

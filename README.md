@@ -123,3 +123,6 @@ func main() {
 - 很简单，当你组装好所有的task以后，直接运行一句话就可以了。
 - `utils.NewPush(tasks).SetRetries(4).SetBufferNum(10).Add("10 * * * * *")`
 - `utils.StartCron()`
+
+## Contributor
+- HundredLee https://github.com/hundredlee
