@@ -70,8 +70,8 @@ func OpenTestConnection() (db *gorm.DB, err error) {
 		db, err = gorm.Open("sqlite3", filepath.Join(os.TempDir(), "gorm.db"))
 	}
 
-	// db.SetLogger(Logger{log.New(os.Stdout, "\r\n", 0)})
-	// db.SetLogger(log.New(os.Stdout, "\r\n", 0))
+	// db.SetLogger(Logger{wlog.New(os.Stdout, "\r\n", 0)})
+	// db.SetLogger(wlog.New(os.Stdout, "\r\n", 0))
 	if os.Getenv("DEBUG") == "true" {
 		db.LogMode(true)
 	}

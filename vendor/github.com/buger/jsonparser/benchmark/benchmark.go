@@ -1,7 +1,7 @@
 package benchmark
 
 /*
-   Small paylod, http log like structure. Size: 190 bytes
+   Small paylod, http wlog like structure. Size: 190 bytes
 */
 var smallFixture []byte = []byte(`{
     "st": 1,

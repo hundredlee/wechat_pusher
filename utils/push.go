@@ -5,23 +5,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/buger/jsonparser"
-	"github.com/hundredlee/wechat_pusher/models"
+	"github.com/hundredlee/wechat_pusher/hlog"
 	"github.com/hundredlee/wechat_pusher/statics"
 	"io/ioutil"
-	"log"
 	"net/http"
+	"strconv"
 	"time"
+	"github.com/hundredlee/wechat_pusher/task"
 )
 
 var accessToken = AccessTokenInstance(false)
+var fileLog = hlog.LogInstance()
 
 type Push struct {
 	bufferNum int
 	retries   int
-	tasks     []models.Task
+	tasks     []task.Task
+	taskType  string
 }
 
-func NewPush(tasks []models.Task) *Push {
+func NewPush(tasks []task.Task) *Push {
 	return &Push{tasks: tasks}
 }
 
@@ -35,6 +38,11 @@ func (self *Push) SetBufferNum(bufferNum int) *Push {
 	return self
 }
 
+func (self *Push) SetTaskType (taskType string) *Push{
+	self.taskType = taskType
+	return self
+}
+
 func (self *Push) Add(schedule string) {
 
 	getCronInstance().AddFunc(schedule, func() {
@@ -42,52 +50,58 @@ func (self *Push) Add(schedule string) {
 			panic("Please SetRetries or SetBufferNum")
 		}
 
+		if self.taskType == ""{
+			panic("Please Set TaskType")
+		}
+
+		fileLog.LogInfo("Start schedule " + schedule + " TaskNumber:" + strconv.Itoa(len(self.tasks)) + " TaskType:" + self.taskType)
+
 		var resourceChannel = make(chan bool, self.bufferNum)
 
 		for _, task := range self.tasks {
 
 			resourceChannel <- true
 
-			go func(task models.Task) {
-
-				retr := 0
-
-				defer func() {
-					if recover() != nil {
-						log.Printf("error-log ++++ TaskInfo : %v ++++\n", task)
-					}
-				}()
-
-				r, _ := json.Marshal(task.Message)
-				url := fmt.Sprintf(statics.WECHAT_TEMPLATE_SEND, accessToken.GetToken())
-
-			LABEL:
-				resp, _ := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(r))
-
-				body, _ := ioutil.ReadAll(resp.Body)
-				errCode, _ := jsonparser.GetInt(body, "errcode")
-
-				if errCode != 0 {
-					if retr >= self.retries {
-						log.Printf("error-log ++++ TaskInfo : %v -- ErrorCode : %d ++++\n", task, errCode)
-					} else {
-
-						if errCode == 40001 {
-							accessToken.Refresh()
-						}
-
-						log.Printf("retry times : %d", retr)
-						time.Sleep(3 * time.Second)
-						retr++
-						goto LABEL
-					}
-				}
-
-				<-resourceChannel
-
-			}(task)
+			go run(task,self.retries,resourceChannel)
 
 		}
 	})
 
+}
+
+func run(task task.Task,retries int,resourceChannel chan bool) {
+	retr := 0
+
+	//defer func() {
+	//	if recover() != nil {
+	//		fileLog.LogError(fmt.Sprintf("task : %v", task))
+	//	}
+	//}()
+
+	r, _ := json.Marshal(task.GetTask())
+	url := fmt.Sprintf(statics.WECHAT_TEMPLATE_SEND, accessToken.GetToken())
+
+LABEL:
+	resp, _ := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(r))
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	errCode, _ := jsonparser.GetInt(body, "errcode")
+
+	if errCode != 0 {
+		if retr >= retries {
+			fileLog.LogError(fmt.Sprintf("TaskInfo : %v -- ErrorCode : %d -- TryTimeOut : %d", task, errCode, retr))
+		} else {
+
+			if errCode == 40001 {
+				fileLog.LogError("AccessToken expired and refresh")
+				accessToken.Refresh()
+			}
+
+			time.Sleep(3 * time.Second)
+			retr++
+			goto LABEL
+		}
+	}
+
+	<-resourceChannel
 }

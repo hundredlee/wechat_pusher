@@ -221,7 +221,7 @@ func (c *Cron) run() {
 	}
 }
 
-// Logs an error to stderr or to the configured error log
+// Logs an error to stderr or to the configured error wlog
 func (c *Cron) logf(format string, args ...interface{}) {
 	if c.ErrorLog != nil {
 		c.ErrorLog.Printf(format, args...)

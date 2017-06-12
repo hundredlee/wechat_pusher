@@ -93,7 +93,7 @@ func (scope *Scope) HasError() bool {
 	return scope.db.Error != nil
 }
 
-// Log print log message
+// Log print wlog message
 func (scope *Scope) Log(v ...interface{}) {
 	scope.db.log(v...)
 }
@@ -957,7 +957,7 @@ func (scope *Scope) typeName() string {
 	return typ.Name()
 }
 
-// trace print sql log
+// trace print sql wlog
 func (scope *Scope) trace(t time.Time) {
 	if len(scope.SQL) > 0 {
 		scope.db.slog(scope.SQL, t, scope.SQLVars...)

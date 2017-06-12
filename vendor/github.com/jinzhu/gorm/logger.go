@@ -101,7 +101,7 @@ type logger interface {
 	Print(v ...interface{})
 }
 
-// LogWriter log writer interface
+// LogWriter wlog writer interface
 type LogWriter interface {
 	Println(v ...interface{})
 }
@@ -111,7 +111,7 @@ type Logger struct {
 	LogWriter
 }
 
-// Print format & print log
+// Print format & print wlog
 func (logger Logger) Print(values ...interface{}) {
 	logger.Println(LogFormatter(values...)...)
 }

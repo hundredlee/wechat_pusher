@@ -39,7 +39,7 @@ var (
 
 	serverPath     = flag.String("redis-server", "redis-server", "Path to redis server binary")
 	serverBasePort = flag.Int("redis-port", 16379, "Beginning of port range for test servers")
-	serverLogName  = flag.String("redis-log", "", "Write Redis server logs to `filename`")
+	serverLogName  = flag.String("redis-wlog", "", "Write Redis server logs to `filename`")
 	serverLog      = ioutil.Discard
 
 	defaultServerMu  sync.Mutex
@@ -163,7 +163,7 @@ func TestMain(m *testing.M) {
 			var err error
 			f, err = os.OpenFile(*serverLogName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error opening redis-log: %v\n", err)
+				fmt.Fprintf(os.Stderr, "Error opening redis-wlog: %v\n", err)
 				return 1
 			}
 			defer f.Close()
