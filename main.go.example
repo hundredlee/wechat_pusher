@@ -1,4 +1,16 @@
-runtime.GOMAXPROCS(runtime.NumCPU())
+package main
+
+import (
+	"github.com/hundredlee/wechat_pusher/enum"
+	"github.com/hundredlee/wechat_pusher/models"
+	"github.com/hundredlee/wechat_pusher/task"
+	"github.com/hundredlee/wechat_pusher/utils"
+	"runtime"
+)
+
+func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	var tasks []task.Task
 	tasks = make([]task.Task, 100)
 	mess := models.Message{
@@ -19,3 +31,5 @@ runtime.GOMAXPROCS(runtime.NumCPU())
 
 	utils.NewPush(tasks).SetTaskType(enum.TASK_TYPE_TEMPLATE).SetRetries(4).SetBufferNum(10).Add("45 * * * * *")
 	utils.StartCron()
+
+}
