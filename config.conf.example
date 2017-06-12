@@ -6,6 +6,7 @@ TEMPLATE=
 
 [Redis]
 POOL_SIZE=
+TIMEOUT=
 HOST=
 PASS=
 DB=
