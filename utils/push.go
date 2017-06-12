@@ -52,9 +52,17 @@ func (self *Push) Add(schedule string) {
 		panic("task is not allow empty")
 	}
 
+	if self.retries == 0 || self.bufferNum == 0 {
+		panic("Please SetRetries or SetBufferNum")
+	}
+
+	if self.taskType == ""{
+		panic("Please Set TaskType")
+	}
+
 	firstTask := self.tasks[0]
 	switch self.taskType {
-	case enum.TASK_TYPE_IMAGE:
+	case enum.TASK_TYPE_TEMPLATE:
 		if _,ok := firstTask.(*task.TemplateTask); !ok {
 			panic("not allow other TaskType struct in this TaskType")
 		}
@@ -62,13 +70,6 @@ func (self *Push) Add(schedule string) {
 	}
 
 	getCronInstance().AddFunc(schedule, func() {
-		if self.retries == 0 || self.bufferNum == 0 {
-			panic("Please SetRetries or SetBufferNum")
-		}
-
-		if self.taskType == ""{
-			panic("Please Set TaskType")
-		}
 
 		fileLog.LogInfo("Start schedule " + schedule + " TaskNumber:" + strconv.Itoa(len(self.tasks)) + " TaskType:" + self.taskType)
 
