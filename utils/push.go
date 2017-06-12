@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/buger/jsonparser"
 	"github.com/hundredlee/wechat_pusher/hlog"
-	"github.com/hundredlee/wechat_pusher/statics"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -79,14 +78,14 @@ func (self *Push) Add(schedule string) {
 
 			resourceChannel <- true
 
-			go run(task,self.retries,resourceChannel)
+			go run(task,self.retries,resourceChannel,self.taskType)
 
 		}
 	})
 
 }
 
-func run(task task.Task,retries int,resourceChannel chan bool) {
+func run(task task.Task,retries int,resourceChannel chan bool,taskType string) {
 	retr := 0
 
 	defer func() {
@@ -96,7 +95,7 @@ func run(task task.Task,retries int,resourceChannel chan bool) {
 	}()
 
 	r, _ := json.Marshal(task.GetTask())
-	url := fmt.Sprintf(statics.WECHAT_TEMPLATE_SEND, accessToken.GetToken())
+	url := fmt.Sprintf(enum.URL_MAP[taskType], accessToken.GetToken())
 
 LABEL:
 	resp, _ := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(r))
