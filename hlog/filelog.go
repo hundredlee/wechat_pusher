@@ -71,12 +71,12 @@ func NewFileLog(isOpen bool,logPath string) *fileLog {
 }
 
 
-func (this *fileLog) log(lable string, str string) {
+func (this *fileLog) log(level string, str string) {
 	if !this.isOpen {
 		return
 	}
 	file, line := this.getCaller()
-	this.logger.Printf("%s:%d: %s %s\n", file, line, lable, str)
+	this.logger.Printf("%s:%d: %s %s\n", file, line, level, str)
 }
 
 func (this *fileLog) LogError(str string) {

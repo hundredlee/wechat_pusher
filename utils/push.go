@@ -55,7 +55,7 @@ func (self *Push) Add(schedule string) {
 	firstTask := self.tasks[0]
 	switch self.taskType {
 	case enum.TASK_TYPE_IMAGE:
-		if _,ok := firstTask.(task.TemplateTask); !ok {
+		if _,ok := firstTask.(*task.TemplateTask); !ok {
 			panic("not allow other TaskType struct in this TaskType")
 		}
 	//TODO other taskType
@@ -117,6 +117,8 @@ LABEL:
 			retr++
 			goto LABEL
 		}
+	}else{
+		fileLog.LogInfo(fmt.Sprintf("%v -- push success",task))
 	}
 
 	<-resourceChannel
