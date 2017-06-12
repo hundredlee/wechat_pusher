@@ -3,3 +3,12 @@ APPID=
 SECRET=
 TOKEN=
 TEMPLATE=
+
+[Redis]
+POOL_SIZE=
+HOST=
+PASS=
+DB=
+
+[Log]
+LOG_PATH=
