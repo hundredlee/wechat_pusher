@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"time"
 	"github.com/hundredlee/wechat_pusher/task"
+	"github.com/hundredlee/wechat_pusher/enum"
 )
 
 var accessToken = AccessTokenInstance(false)
@@ -45,6 +46,21 @@ func (self *Push) SetTaskType (taskType string) *Push{
 
 func (self *Push) Add(schedule string) {
 
+
+	//if tasks len equal 0 || the first object is not right taskType panic
+	if len(self.tasks) <= 0{
+		panic("task is not allow empty")
+	}
+
+	firstTask := self.tasks[0]
+	switch self.taskType {
+	case enum.TASK_TYPE_IMAGE:
+		if _,ok := firstTask.(task.TemplateTask); !ok {
+			panic("not allow other TaskType struct in this TaskType")
+		}
+	//TODO other taskType
+	}
+
 	getCronInstance().AddFunc(schedule, func() {
 		if self.retries == 0 || self.bufferNum == 0 {
 			panic("Please SetRetries or SetBufferNum")
@@ -72,11 +88,11 @@ func (self *Push) Add(schedule string) {
 func run(task task.Task,retries int,resourceChannel chan bool) {
 	retr := 0
 
-	//defer func() {
-	//	if recover() != nil {
-	//		fileLog.LogError(fmt.Sprintf("task : %v", task))
-	//	}
-	//}()
+	defer func() {
+		if recover() != nil {
+			fileLog.LogError(fmt.Sprintf("task : %v", task))
+		}
+	}()
 
 	r, _ := json.Marshal(task.GetTask())
 	url := fmt.Sprintf(statics.WECHAT_TEMPLATE_SEND, accessToken.GetToken())
