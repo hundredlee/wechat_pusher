@@ -13,7 +13,7 @@ import (
 
 
 type fileLog struct {
-	Hlog
+	hlog
 	logger *log.Logger
 }
 

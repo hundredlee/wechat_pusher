@@ -2,19 +2,19 @@ package hlog
 
 import "runtime"
 
-type Hlog struct {
+type hlog struct {
 	isOpen bool
 }
 
-func (this *Hlog) Open() {
+func (this *hlog) Open() {
 	this.isOpen = true
 }
 
-func (this *Hlog) Close() {
+func (this *hlog) Close() {
 	this.isOpen = false
 }
 
-func (this *Hlog) getCaller() (string, int) {
+func (this *hlog) getCaller() (string, int) {
 	_, file, line, ok := runtime.Caller(3)
 	if !ok {
 		file = "???"
