@@ -99,10 +99,10 @@ appId := conf.ConMap["WeChat.APPID"]
 ```
 
 
-#### 模板配置怎么配置
-- 我们看看models文件夹里面有message.go文件，里面其实就是模板的格式。
-- 具体怎么用，看看main.go.example文件里面的示例。
-
+#### 模板怎么配置
+- 以模板消息作为例子说明：
+- message.go 是模板消息的结构
+- template_task.go 是将一个模板消息封装成任务（template_task.go 是实现了接口task.go的）
 ```Go
 mess := models.Message{
 		ToUser:     "openid",
