@@ -108,7 +108,7 @@ LABEL:
 			fileLog.LogError(fmt.Sprintf("TaskInfo : %v -- ErrorCode : %d -- TryTimeOut : %d", task, errCode, retr))
 		} else {
 
-			if errCode == 40001 {
+			if errCode == 40001 || accessToken.Expired(){
 				fileLog.LogError("AccessToken expired and refresh")
 				accessToken.Refresh()
 			}

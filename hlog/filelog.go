@@ -67,6 +67,7 @@ func NewFileLog(isOpen bool,logPath string) *fileLog {
 	fFileLog := &fileLog{}
 	fFileLog.logger = log.New(f, "", log.LstdFlags)
 	fFileLog.isOpen = isOpen
+
 	return fFileLog
 }
 
