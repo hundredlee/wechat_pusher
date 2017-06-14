@@ -8,9 +8,9 @@ package redis
 import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/hundredlee/wechat_pusher/config"
-	"time"
-	"os"
 	"github.com/hundredlee/wechat_pusher/hlog"
+	"os"
+	"time"
 )
 
 var (
@@ -60,15 +60,15 @@ func instance() *redis.Pool {
 	conn := redisPool.Get()
 	defer conn.Close()
 
-	r,err := redis.String(conn.Do("PING","test"))
+	r, err := redis.String(conn.Do("PING", "test"))
 	if err != nil {
 		panic(err)
 	}
 
-	if r !=  "test"{
+	if r != "test" {
 		hlog.LogInstance().LogInfo("redis connect failed")
 		os.Exit(-1)
-	}else{
+	} else {
 		hlog.LogInstance().LogInfo("redis connect success")
 	}
 
@@ -89,4 +89,67 @@ func Exists(key string) bool {
 		return false
 	}
 	return n > 0
+}
+
+/**
+@param key
+@param value
+@param refresh true or false
+@param ttl -1 means persistence
+*/
+func Set(key string, value string, refresh bool, ttl int) bool {
+	conn := instance().Get()
+	defer conn.Close()
+
+	exists := Exists(key)
+
+	if exists && !refresh {
+		return false
+	}
+
+	if refresh && exists {
+		var err error
+
+		if ttl != -1 {
+			_, err = redis.String(conn.Do("set", key, value, "ex", ttl))
+		} else {
+			_, err = redis.String(conn.Do("set", key, value))
+		}
+
+		if err != nil {
+			return false
+		}
+
+		return true
+	}
+
+	if !exists {
+		var err error
+
+		if ttl != -1 {
+			_, err = redis.String(conn.Do("set", key, value, "ex", ttl))
+		} else {
+			_, err = redis.String(conn.Do("set", key, value))
+		}
+
+		if err != nil {
+			return false
+		}
+
+		return true
+	}
+
+	return false
+}
+
+func Get(key string) interface{} {
+
+	conn := instance().Get()
+	defer conn.Close()
+
+	val, err := conn.Do("get", key)
+	if err != nil {
+		return nil
+	}
+	return val
 }
