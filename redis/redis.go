@@ -66,7 +66,7 @@ func instance() *redis.Pool {
 	}
 
 	if r !=  "test"{
-		panic("redis connect failed")
+		hlog.LogInstance().LogInfo("redis connect failed")
 		os.Exit(-1)
 	}else{
 		hlog.LogInstance().LogInfo("redis connect success")
