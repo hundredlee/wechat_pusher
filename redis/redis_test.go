@@ -6,5 +6,5 @@ import (
 )
 
 func TestNewRedis(t *testing.T) {
-	redis.NewRedis()
+
 }

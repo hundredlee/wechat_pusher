@@ -9,6 +9,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/hundredlee/wechat_pusher/config"
 	"time"
+	"fmt"
 )
 
 var (
@@ -23,17 +24,22 @@ func instance() *redis.Pool {
 	}
 
 	host := conf.ConMap["Redis.HOST"]
-	pass := conf.ConMap["Redis.PASS"]
-	db := conf.ConMap["Redis.DB"]
+	//pass := conf.ConMap["Redis.PASS"]
+	//db := conf.ConMap["Redis.DB"]
+	poolsize := conf.ConMap["Redis.POOL_SIZE"]
+	timeout := conf.ConMap["Redis.TIMEOUT"]
 	if host == nil {
 		panic("Redis Config not complete")
 	}
 
 	redisPool = &redis.Pool{
-		MaxActive:   int(conf.ConMap["Redis.POOL_SIZE"]),
-		IdleTimeout: time.Duration(int(conf.ConMap["Redis.TIMEOUT"])) * time.Second,
+		MaxActive:   int(poolsize.(int)),
+		IdleTimeout: time.Duration(timeout.(int)) * time.Second,
 		Dial: func() (conn redis.Conn, err error) {
-			c, err := redis.Dial("tpc", string(host), redis.DialPassword(string(pass)), redis.DialDatabase(int(db)))
+
+
+			c, err := redis.Dial("tpc", host.(string))
+
 			if err != nil {
 				return nil, err
 			}
@@ -48,6 +54,7 @@ func instance() *redis.Pool {
 
 }
 
+
 func Exists(key string) bool {
 	conn := instance().Get()
 	defer conn.Close()
@@ -56,6 +63,7 @@ func Exists(key string) bool {
 	}
 
 	n, err := redis.Int(conn.Do("EXISTS", key))
+	fmt.Println(n)
 	if err != nil {
 		return false
 	}
