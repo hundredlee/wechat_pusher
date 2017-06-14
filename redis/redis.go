@@ -9,7 +9,8 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/hundredlee/wechat_pusher/config"
 	"time"
-	"fmt"
+	"os"
+	"github.com/hundredlee/wechat_pusher/hlog"
 )
 
 var (
@@ -24,8 +25,8 @@ func instance() *redis.Pool {
 	}
 
 	host := conf.ConMap["Redis.HOST"]
-	//pass := conf.ConMap["Redis.PASS"]
-	//db := conf.ConMap["Redis.DB"]
+	pass := conf.ConMap["Redis.PASS"]
+	db := conf.ConMap["Redis.DB"]
 	poolsize := conf.ConMap["Redis.POOL_SIZE"]
 	timeout := conf.ConMap["Redis.TIMEOUT"]
 	if host == nil {
@@ -35,10 +36,19 @@ func instance() *redis.Pool {
 	redisPool = &redis.Pool{
 		MaxActive:   int(poolsize.(int)),
 		IdleTimeout: time.Duration(timeout.(int)) * time.Second,
-		Dial: func() (conn redis.Conn, err error) {
+		Dial: func() (redis.Conn, error) {
 
-
-			c, err := redis.Dial("tpc", host.(string))
+			var c redis.Conn
+			var err error
+			if pass != nil && db != nil {
+				c, err = redis.Dial("tpc", host.(string), redis.DialPassword(pass.(string)), redis.DialDatabase(db.(int)))
+			} else if db != nil {
+				c, err = redis.Dial("tpc", host.(string), redis.DialDatabase(db.(int)))
+			} else if pass != nil {
+				c, err = redis.Dial("tpc", host.(string), redis.DialPassword(pass.(string)))
+			} else {
+				c, err = redis.Dial("tcp", host.(string))
+			}
 
 			if err != nil {
 				return nil, err
@@ -50,10 +60,21 @@ func instance() *redis.Pool {
 	conn := redisPool.Get()
 	defer conn.Close()
 
+	r,err := redis.String(conn.Do("PING","test"))
+	if err != nil {
+		panic(err)
+	}
+
+	if r !=  "test"{
+		panic("redis connect failed")
+		os.Exit(-1)
+	}else{
+		hlog.LogInstance().LogInfo("redis connect success")
+	}
+
 	return redisPool
 
 }
-
 
 func Exists(key string) bool {
 	conn := instance().Get()
@@ -63,7 +84,7 @@ func Exists(key string) bool {
 	}
 
 	n, err := redis.Int(conn.Do("EXISTS", key))
-	fmt.Println(n)
+
 	if err != nil {
 		return false
 	}
