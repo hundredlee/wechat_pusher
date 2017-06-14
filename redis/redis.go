@@ -38,22 +38,28 @@ func instance() *redis.Pool {
 		IdleTimeout: time.Duration(timeout.(int)) * time.Second,
 		Dial: func() (redis.Conn, error) {
 
-			var c redis.Conn
-			var err error
-			if pass != nil && db != nil {
-				c, err = redis.Dial("tpc", host.(string), redis.DialPassword(pass.(string)), redis.DialDatabase(db.(int)))
-			} else if db != nil {
-				c, err = redis.Dial("tpc", host.(string), redis.DialDatabase(db.(int)))
-			} else if pass != nil {
-				c, err = redis.Dial("tpc", host.(string), redis.DialPassword(pass.(string)))
-			} else {
-				c, err = redis.Dial("tcp", host.(string))
-			}
+			c, err := redis.Dial("tcp", host.(string))
 
 			if err != nil {
 				return nil, err
 			}
+
+			if pass != nil {
+				if _, err := c.Do("AUTH", pass.(string)); err != nil {
+					c.Close()
+					return nil, err
+				}
+			}
+
+			if db != nil {
+				if _, err := c.Do("SELECT", db.(int)); err != nil {
+					c.Close()
+					return nil, err
+				}
+			}
+
 			return c, nil
+
 		},
 	}
 
