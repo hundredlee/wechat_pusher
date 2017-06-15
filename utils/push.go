@@ -18,28 +18,28 @@ var accessToken = AccessTokenInstance(false)
 var fileLog = hlog.LogInstance()
 
 type Push struct {
-	bufferNum int
-	retries   int
-	tasks     []task.Task
-	taskType  string
+	BufferNum int
+	Retries   int
+	Tasks     []task.Task
+	TaskType  string
 }
 
-func NewPush(tasks []task.Task) *Push {
-	return &Push{tasks: tasks}
+func NewPush(push *Push) *Push {
+	return push
 }
 
 func (self *Push) SetRetries(retries int) *Push {
-	self.retries = retries
+	self.Retries = retries
 	return self
 }
 
 func (self *Push) SetBufferNum(bufferNum int) *Push {
-	self.bufferNum = bufferNum
+	self.BufferNum = bufferNum
 	return self
 }
 
 func (self *Push) SetTaskType (taskType string) *Push{
-	self.taskType = taskType
+	self.TaskType = taskType
 	return self
 }
 
@@ -47,20 +47,20 @@ func (self *Push) Add(schedule string) {
 
 
 	//if tasks len equal 0 || the first object is not right taskType panic
-	if len(self.tasks) <= 0{
+	if len(self.Tasks) <= 0{
 		panic("task is not allow empty")
 	}
 
-	if self.retries == 0 || self.bufferNum == 0 {
+	if self.Retries == 0 || self.BufferNum == 0 {
 		panic("Please SetRetries or SetBufferNum")
 	}
 
-	if self.taskType == ""{
+	if self.TaskType == ""{
 		panic("Please Set TaskType")
 	}
 
-	firstTask := self.tasks[0]
-	switch self.taskType {
+	firstTask := self.Tasks[0]
+	switch self.TaskType {
 	case enum.TASK_TYPE_TEMPLATE:
 		if _,ok := firstTask.(*task.TemplateTask); !ok {
 			panic("not allow other TaskType struct in this TaskType")
@@ -70,15 +70,15 @@ func (self *Push) Add(schedule string) {
 
 	getCronInstance().AddFunc(schedule, func() {
 
-		fileLog.LogInfo("Start schedule " + schedule + " TaskNumber:" + strconv.Itoa(len(self.tasks)) + " TaskType:" + self.taskType)
+		fileLog.LogInfo("Start schedule " + schedule + " TaskNumber:" + strconv.Itoa(len(self.Tasks)) + " TaskType:" + self.TaskType)
 
-		var resourceChannel = make(chan bool, self.bufferNum)
+		var resourceChannel = make(chan bool, self.BufferNum)
 
-		for _, task := range self.tasks {
+		for _, task := range self.Tasks {
 
 			resourceChannel <- true
 
-			go run(task,self.retries,resourceChannel,self.taskType)
+			go run(task,self.Retries,resourceChannel,self.TaskType)
 
 		}
 	})

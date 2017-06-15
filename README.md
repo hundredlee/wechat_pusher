@@ -162,8 +162,14 @@ func main() {
 		tasks[i] = &task
 	}
 
-	utils.NewPush(tasks).SetTaskType(enum.TASK_TYPE_TEMPLATE).SetRetries(4).SetBufferNum(10).Add("45 * * * * *")
-	utils.StartCron()
+	utils.NewPush(&utils.Push{
+    	Tasks:tasks,
+    	TaskType:enum.TASK_TYPE_TEMPLATE,
+    	Retries:4,
+    	BufferNum:10,
+    }).Add("45 * * * * *")
+
+    utils.StartCron()
 
 }
 
@@ -178,7 +184,18 @@ func main() {
 
 ### Run
 - 很简单，当你组装好所有的task以后，直接运行一句话就可以了。
-- `utils.NewPush(tasks).SetTaskType(enum.TASK_TYPE_TEMPLATE).SetRetries(4).SetBufferNum(10).Add("45 * * * * *")`
+
+```Go
+    utils.NewPush(&utils.Push{
+    	Tasks:tasks,
+    	TaskType:enum.TASK_TYPE_TEMPLATE,
+    	Retries:4,
+    	BufferNum:10,
+    }).Add("45 * * * * *")
+
+    utils.StartCron()
+
+```
 
 - `utils.StartCron()`
 

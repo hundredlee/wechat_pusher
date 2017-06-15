@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/hundredlee/wechat_pusher/enum"
-	"github.com/hundredlee/wechat_pusher/models"
-	"github.com/hundredlee/wechat_pusher/task"
-	"github.com/hundredlee/wechat_pusher/utils"
-	"runtime"
+"github.com/hundredlee/wechat_pusher/enum"
+"github.com/hundredlee/wechat_pusher/models"
+"github.com/hundredlee/wechat_pusher/task"
+"github.com/hundredlee/wechat_pusher/utils"
+"runtime"
 )
 
 func main() {
@@ -29,7 +29,13 @@ func main() {
 		tasks[i] = &task
 	}
 
-	utils.NewPush(tasks).SetTaskType(enum.TASK_TYPE_TEMPLATE).SetRetries(4).SetBufferNum(10).Add("45 * * * * *")
+	utils.NewPush(&utils.Push{
+		Tasks:tasks,
+		TaskType:enum.TASK_TYPE_TEMPLATE,
+		Retries:4,
+		BufferNum:10,
+	}).Add("45 * * * * *")
+
 	utils.StartCron()
 
 }
