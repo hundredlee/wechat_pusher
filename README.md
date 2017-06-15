@@ -162,7 +162,7 @@ func main() {
 		tasks[i] = &task
 	}
 
-	utils.NewPush(&utils.Push{
+    utils.NewPush(&utils.Push{
     	Tasks:tasks,
     	TaskType:enum.TASK_TYPE_TEMPLATE,
     	Retries:4,
