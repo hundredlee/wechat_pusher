@@ -201,6 +201,6 @@ func main() {
 
 ## Contributor
 - HundredLee https://github.com/hundredlee
-- Cospotato  https://github.com/cospotato
+- Cospotato  https://github.com/cospotato (感谢提供Redis连接池的解决思路)
 
 
