@@ -100,12 +100,12 @@ func Init(file string) *Config {
 
 		conValue := strings.TrimSpace(lineValue[conKeyPos+1:])
 
-		if conValue == ""{
+		if conValue == "" {
 			conf.ConMap[conf.Section+"."+conKey] = nil
-		}else{
-			if value, err := strconv.ParseInt(conValue,10,64); err == nil {
+		} else {
+			if value, err := strconv.ParseInt(conValue, 10, 64); err == nil {
 				conf.ConMap[conf.Section+"."+conKey] = int(value)
-			}else{
+			} else {
 				conf.ConMap[conf.Section+"."+conKey] = conValue
 			}
 		}

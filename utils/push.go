@@ -81,6 +81,8 @@ func (self *Push) Add(schedule string) {
 			go run(task,self.Retries,resourceChannel,self.TaskType)
 
 		}
+
+		close(resourceChannel)
 	})
 
 }
@@ -94,6 +96,7 @@ func run(task task.Task,retries int,resourceChannel chan bool,taskType string) {
 		}
 	}()
 
+
 	r, _ := json.Marshal(task.GetTask())
 	url := fmt.Sprintf(enum.URL_MAP[taskType], accessToken.GetToken())
 
@@ -101,6 +104,7 @@ LABEL:
 	resp, _ := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(r))
 
 	body, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 	errCode, _ := jsonparser.GetInt(body, "errcode")
 
 	if errCode != 0 {
