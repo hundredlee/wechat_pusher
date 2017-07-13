@@ -46,7 +46,7 @@ func instance() *redis.Pool {
 
 			/**
 			* maybe redis connect without or no need select database
-			*/
+			 */
 			if pass != nil {
 				if _, err := c.Do("AUTH", pass.(string)); err != nil {
 					c.Close()
@@ -151,7 +151,7 @@ func Set(key string, value string, refresh bool, ttl int) bool {
 	return false
 }
 
-func Get(key string) interface{} {
+func Get(key string) []byte {
 
 	conn := instance().Get()
 	defer conn.Close()
@@ -160,5 +160,20 @@ func Get(key string) interface{} {
 	if err != nil {
 		return nil
 	}
-	return val
+	if vall, ok := val.([]byte); ok {
+		return vall
+	}
+	return []byte{}
+}
+
+func TTL(key string) int {
+	conn := instance().Get()
+
+	defer conn.Close()
+
+	ttl, err := redis.Int(conn.Do("ttl", key))
+	if err != nil {
+		panic(err.Error())
+	}
+	return ttl
 }
