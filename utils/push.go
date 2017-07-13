@@ -84,8 +84,26 @@ func (self *Push) Add(schedule string) {
 		}
 
 		close(resourceChannel)
+
 	})
 
+}
+
+func (self *Push) RunRightNow(schedule string) {
+
+	fileLog.LogInfo("Start schedule " + schedule + " TaskNumber:" + strconv.Itoa(len(self.Tasks)) + " TaskType:" + self.TaskType)
+
+	var resourceChannel = make(chan bool, self.BufferNum)
+
+	for _, task := range self.Tasks {
+
+		resourceChannel <- true
+
+		go run(task, self.Retries, resourceChannel, self.TaskType)
+
+	}
+
+	close(resourceChannel)
 }
 
 func run(task task.Task, retries int, resourceChannel chan bool, taskType string) {
